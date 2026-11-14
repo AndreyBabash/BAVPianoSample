@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ноти</title>
+
+<style>
+  body {
+      display: flex;
+      flex-direction: column;
+      background: rgba(255, 0, 255, 0.3);
+      background-size: cover;
+      background-repeat: no-repeat;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #ece10c, #ece1f1);
+  }
+
+  button {
+      padding: 20px 100px;
+      margin: 2px;
+      color: rgba(255, 0, 0, 1);
+      border: none;
+      border-radius: 5px;
+      background: rgba(170, 165, 187, 1);
+      font-size: 18px;
+      /*position: absolute;*/
+      top: 10%;
+      left: 10%;
+      cursor: pointer;
+  }
+  
+  button:hover {
+    background: green;
+    color: rgba(255, 255, 255, 1);
+  }
+
+
+</style>
+</head>
+
+<body>
+
+<button id="n1">C4</button>
+<button id="n2">C#4</button>
+<button id="n3">A4</button>
+<script>
+  const btn = document.getElementById("n1");
+  const btn1 = document.getElementById("n2");
+  const btn2 = document.getElementById("n3");
+  const audio = new (window.AudioContext || window.webkitAudioContext)();
+  const notes = {
+      "C4": 261.63,
+      "C#4": 277.18,
+      "D4": 293.66,
+      "D#4": 311.13,
+      "E4": 329.63,
+      "F4": 349.23,
+      "F#4": 369.99,
+      "G4": 392.00,
+      "G#4": 415.30,
+      "A4": 440.00,
+      "A#4": 466.16,
+      "B4": 493.88,
+      "C5": 523.25
+  };
+  // Відтворення звуку
+  //gain — об'єкт, який регулює гучність.
+  //gain.gain — параметр гучності.
+  //setValueAtTime() — встановлює певне значення у визначений момент часу.
+  //0.9 — початкова гучність (90% від одиничного значення).
+  //audio.currentTime — поточний час аудіосистеми.
+  //exponentialRampToValueAtTime() — плавно змінює значення за експоненціальним законом.
+  //0.001 — кінцева гучність.
+  //audio.currentTime + 1 — момент завершення зміни, через одну секунду
+
+  function playNote(note) {
+    if (audio.state === "suspended") {
+        audio.resume();
+    }
+    const oscillator = audio.createOscillator();
+    const gain = audio.createGain();
+    oscillator.type = "sine";
+    oscillator.frequency.value = notes[note];
+    oscillator.connect(gain);
+    gain.connect(audio.destination);
+    gain.gain.setValueAtTime(0.9, audio.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.1, audio.currentTime + 1); 
+    oscillator.start();
+    oscillator.stop(audio.currentTime + 1);
+  } 
+  
+  btn.addEventListener("click", () => {
+      playNote("C4")
+  });
+
+  btn1.addEventListener("click", () => {
+      playNote("C#4")
+  });
+  btn2.addEventListener("click", () => {
+      playNote("A4")
+  });
+</script>
+
+</body>
+</html>
